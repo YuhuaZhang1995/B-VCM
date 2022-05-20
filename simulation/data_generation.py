@@ -81,6 +81,7 @@ B[0,1]=float(sys.argv[6])
 B[1,0]=float(sys.argv[6])
 B[0,0]=float(sys.argv[7])
 B[1,1]=float(sys.argv[7])
+size=int(sys.argv[8])
 
 K=len(alpha_zero)
 listKeys=list(range(0,K))
@@ -90,7 +91,7 @@ for i in listKeys:
 
 generated_int=[]
 ##########Generate the data###########
-gen_sample(alpha,theta,alpha_zero,B,interactions,generated_int,10000)
+gen_sample(alpha,theta,alpha_zero,B,interactions,generated_int,size)
 
 #######Write the data to files##########
 filename=sys.argv[1]
