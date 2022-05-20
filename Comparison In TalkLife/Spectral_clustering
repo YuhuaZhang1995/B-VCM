@@ -1,0 +1,114 @@
+from sklearn.cluster import KMeans
+import numpy as np
+import collections
+import sys
+from scipy import linalg
+import random
+
+#########################################################
+############ Regularized spectral clustering ############
+# Input data: 
+# A: Affinity matrix
+# K: number of clusters
+# Tau: average degree of node
+# Laplacian matrix: L=D^{-1/2}AD^{-1/2}; D=D+Tau*I, D_ii=\sum_{j}A_{ij} 
+
+#########################################################
+# Set K=2
+K=int(sys.argv[2])
+
+#Input file processing
+filename=sys.argv[1]
+interactions4={}
+count_all={}
+remove_header=0
+with open(filename) as infile:
+	for line in infile:
+		remove_header=remove_header+1
+		s1=line.strip().split("\t")[0]
+		s2=line.strip().split("\t")[1]
+		cs1=line.strip().split("\t")[2]
+		cs2=line.strip().split("\t")[3]
+		Q=line.strip().split("\t")[4]
+		#if change the sender, restart the loop
+		if remove_header>1:
+			if not int(s1) in count_all:
+				count_all[int(s1)]=1
+			else:
+				count_all[int(s1)]+=1
+
+			if not int(s2) in count_all:
+				count_all[int(s2)]=1
+			else:
+				count_all[int(s2)]+=1
+
+
+			if not int(s1) in interactions4:
+				interactions4[int(s1)]=[int(s2)]
+			else:
+				interactions4[int(s1)].append(int(s2))
+			
+			if not int(s2) in interactions4:
+				interactions4[int(s2)]=[int(s1)]
+			else:
+				interactions4[int(s2)].append(int(s1))
+infile.close()
+N=len(count_all)
+s_list=list(count_all.keys())
+s_list.sort()
+s_list=np.array(s_list)
+count_all= dict(collections.OrderedDict(sorted(count_all.items())))
+
+#Adjacency matrix A
+A=np.zeros((N,N))
+for keys in interactions4:
+	for values in interactions4[keys]:
+		A[np.where(s_list==keys)[0][0],np.where(s_list==values)[0][0]]=1
+		A[np.where(s_list==values)[0][0],np.where(s_list==keys)[0][0]]=1
+
+#Diagonal matrix D
+D=np.identity(N)
+np.fill_diagonal(D,A.sum(axis=0))
+
+#Tau: average degree of node
+Tau=np.identity(N)
+np.fill_diagonal(Tau,list(count_all.values()))
+D_tau=D+Tau
+np.fill_diagonal(D_tau,1/np.sqrt(np.diag(D_tau)))
+
+#L_tau=D_tau^{-1/2}AD_tau^{-1/2}
+L_tau=np.dot(D_tau,A)
+L_tau=np.dot(L_tau,D_tau)
+
+#Eigen value decomposition and the largest K values
+#eigenValues, eigenVectors = np.linalg.eig(L_tau)
+eigenValues, eigenVectors =  linalg.eigh(L_tau)
+idx = eigenValues.argsort()[::-1]   
+eigenValues = eigenValues[idx]
+eigenVectors = eigenVectors[:,idx]
+X=eigenVectors[:,0:K]
+for i in range(len(eigenValues)):
+	if X[i,0]!=0 and X[i,1]!=0:
+		X[i,0]=X[i,0]/linalg.norm(X[i,:])
+		X[i,1]=X[i,1]/linalg.norm(X[i,:])
+	elif X[i,0]==0 and X[i,1]==0:
+		index=random.randint(0, 1)
+		X[i,index]=1
+		X[i,1-index]=0
+	else:
+		X[i,np.where(X[i,:]==0)]=0
+		X[i,np.where(X[i,:]!=0)]=1
+X=X / np.linalg.norm(X, axis=1)[:, np.newaxis] #normaization
+
+#k-means to determine the cluster
+kmeans = KMeans(n_clusters=K, random_state=0).fit(X)
+for i in range(len(kmeans.labels_)):
+	print([s_list[i],kmeans.labels_[i]])
+
+
+
+
+
+
+
+
