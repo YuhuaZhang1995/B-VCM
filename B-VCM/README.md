@@ -8,7 +8,7 @@ This folder contains the implementation code of B-VCM.
 python B-VCM.py --input-file testdata.txt --K 2 --iter 10 --burn-in 5 --output-powerlaw --output-cluster --output-llk --output-propensity
 
 
-## Description of the usage
+## Description of the Usage
 
 - **Required parameter**
 
