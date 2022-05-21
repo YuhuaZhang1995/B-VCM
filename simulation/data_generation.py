@@ -70,17 +70,13 @@ def gen_sample(alpha,theta,alpha_zero,B,interactions,generated_int,iter):
 
 ###########Initialization########
 K=2
-alpha_zero=[10,10]
-alpha=[0.2,0.8]
-theta=[2,2]
-B=np.matrix('0.9,0.1;0.1,0.9')
-alpha[0]=0.5
-alpha[1]=0.5
-theta[0]=5
-theta[1]=5
+alpha_zero=[10]*K
+alpha=[0.5]*K
+theta=[5]*K
 B=np.ones((K,K))/(1/0.1*(K-1))
 np.fill_diagonal(B, 0.9)
 size=100
+
 
 command=sys.argv[1:]
 for i in range(len(command)):
