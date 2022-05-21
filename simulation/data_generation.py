@@ -69,21 +69,39 @@ def gen_sample(alpha,theta,alpha_zero,B,interactions,generated_int,iter):
 	return(generated_int)
 
 ###########Initialization########
+K=2
 alpha_zero=[10,10]
 alpha=[0.2,0.8]
 theta=[2,2]
 B=np.matrix('0.9,0.1;0.1,0.9')
-alpha[0]=float(sys.argv[2])
-alpha[1]=float(sys.argv[3])
-theta[0]=float(sys.argv[4])
-theta[1]=float(sys.argv[5])
-B[0,1]=float(sys.argv[6])
-B[1,0]=float(sys.argv[6])
-B[0,0]=float(sys.argv[7])
-B[1,1]=float(sys.argv[7])
-size=int(sys.argv[8])
+alpha[0]=0.5
+alpha[1]=0.5
+theta[0]=5
+theta[1]=5
+B=np.ones((K,K))/(1/0.1*(K-1))
+np.fill_diagonal(B, 0.9)
+size=100
 
-K=len(alpha_zero)
+command=sys.argv[1:]
+for i in range(len(command)):
+	if command[i]=="--alpha":
+		for k in range(K):
+			alpha[k]=float(command[i+1+k])
+	if command[i]=="--theta":
+		for k in range(K):
+			theta[k]=float(command[i+1+k])
+	if command[i]=="--B":
+		B=np.ones((K,K))/(1/(1-float(command[i+1]))*(K-1))
+		np.fill_diagonal(B, float(command[i+1]))
+	if command[i]=="--prior-pi":
+		alpha_zero=[float(command[i+1])]*K
+	if command[i]=="--K":
+		K=int(command[i+1])
+	if command[i]=="--interc":
+		size=int(command[i+1])
+	if command[i]=="--output-file":
+		filename=command[i+1]
+
 listKeys=list(range(0,K))
 interactions=defaultdict(list)
 for i in listKeys:
@@ -94,7 +112,6 @@ generated_int=[]
 gen_sample(alpha,theta,alpha_zero,B,interactions,generated_int,size)
 
 #######Write the data to files##########
-filename=sys.argv[1]
 with open(filename,"a") as myfile:
 	tmp="node1\tnode2\tc1\tc2\n"
 	myfile.write(tmp)
@@ -104,4 +121,3 @@ with open(filename,"a") as myfile:
 		tmp=str(sender)+"\t"+str(receiver)+"\t"+str(i[2])+"\t"+str(i[3])+"\n"
 		myfile.write(tmp)
 myfile.close()
-
