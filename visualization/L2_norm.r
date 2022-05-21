@@ -1,30 +1,36 @@
 library(stringr)
 library(ggplot2)
+alp=c(1,2,5,10,20,50,100)
 
-alp=c(1,2,5,10,20,50)
-l2_plot=c()
-for (i in alp){
-	truth=read.table(file=paste0("../../clustering_v1/data_2500_same_alpha/data_K_2_2500_direct_alpha_05_05_theta_5_5_B_01_09_pi_5_5.",i,".txt"),header=T)
-	truth_deg=as.data.frame(table(c(truth$node1,truth$node2)))
-	filename=paste0("results_K_2_2500_alpha_05_theta_5_B_01_09.phi.",i,".txt")
-	phi=read.table(file=filename,header=F,sep="\n")
-
-	tmp<-unlist(strsplit(as.character(phi[,1]),","))
-	tmp=str_replace(tmp,"\\]","")
-	tmp=str_replace(tmp,"\\[","")
-	tmp=data.frame(matrix(as.numeric(tmp),ncol=2,byrow = T))
-	phi=tmp
-	phi$c=ifelse(as.numeric(as.character(phi$X1))%%2==0,0,1)
-	phi=merge(phi,truth_deg,by.x="X1",by.y="Var1",all.x=TRUE)
-
-	#l2_plot=c()
-	for (m in alp){
-		tmp=min(sqrt(sum((phi[which(phi$Freq>=m),]$X2-1+phi[which(phi$Freq>=m),]$c)^2)/nrow(phi[which(phi$Freq>=m),])),sqrt(sum((phi[which(phi$Freq>=m),]$X2-phi[which(phi$Freq>=m),]$c)^2)/nrow(phi[which(phi$Freq>=m),])))
-		l2_plot=rbind(l2_plot,c(i,m,tmp))
+l2_norm=c()
+for (i in c(1:20)){
+		filename1="cluster_ass.txt"
+		filename2="truth.txt"
+		file=read.table(file=filename1,header=F,sep="\n")
+		truth=read.table(file=filename2,header=T)
+		truth=data.frame(node=c(truth$node1,truth$node2),cs_t=c(truth$c1,truth$c2))
+		truth_deg=as.data.frame(table(truth$node))
+		truth=truth[!duplicated(truth$node),]
+		truth=truth[order(truth$node),]
+		truth=merge(truth,truth_deg,by.x="node",by.y="Var1")
+		cs=file[,1]
+		cs=cs/1000
+		norms=truth
+		# Misclassfication regarding greater than 0.5 rule
+		#cs=ifelse(cs>0.5,1,0)
+		norms$aver_cs=cs
+		for  (m in alp){
+			deg_cut=m
+			norms=norms[which(norms$Freq>=deg_cut),]
+			tmp1=0.5-abs(sqrt(sum((norms$aver_cs-norms$cs_t)^2)/length(norms$node))-0.5)
+			tmp2=0.5-abs(sqrt(sum((norms$aver_cs-(1-norms$cs_t))^2)/length(norms$node))-0.5)
+			tmp=min(tmp1,tmp2)
+			l2_norm=rbind(l2_norm,c(i,m,tmp))
+		}
 	}
-}
+}}
 
-l2_norm=as.data.frame(l2_plot)
+l2_norm=as.data.frame(l2_norm)
 colnames(l2_norm)=c("batch","cutoff","l2_norm")
 l2_norm$upper=NA
 l2_norm$lower=NA
@@ -41,12 +47,12 @@ colnames(llk_333)=c("batch","cutoff","l2_norm","upper","lower")
 p1=ggplot(data=l2_norm,aes(x=log(cutoff),y=l2_norm,group=batch))+
 geom_line(color="grey")+
 geom_line(data=llk_333)+geom_point(data=llk_333)+geom_ribbon(aes(ymin=lower, ymax=upper), linetype=2, alpha=0.04)+
-ylab("L2 norm")+xlab("Log of degree cutoff")+
-ylim(c(-0.005,0.35))+
+ylab("L2 norm")+xlab("Log of degree cutoff")+ylim(c(-0.005,0.125))+
 theme(axis.text=element_text(size=20),text = element_text(size=20))
 
 
-jpeg("Spaghetti_plot_2500_VI.jpeg")
+jpeg("Spaghetti_plot.jpeg")
 print(p1)
 dev.off()
+
 
