@@ -9,7 +9,7 @@ The Project includes the code needed to reproduce results, which includes
 
 (1) The implementation of B-VCM model (See details at [B-VCM](https://github.com/YuhuaZhang1995/B-VCM/blob/main/B-VCM/README.md))
 
-(2) The simulation pipeline used to generate the data (See details at [Simulation](https://github.com/YuhuaZhang1995/B-VCM/blob/main/README.md))
+(2) The simulation pipeline used to generate the data (See details at [Simulation](https://github.com/YuhuaZhang1995/B-VCM/blob/main/simulation/README.md))
 
 (3) The visualization of the results (See details at [Plots](https://github.com/YuhuaZhang1995/B-VCM/blob/main/visualization/README.md))
 
