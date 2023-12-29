@@ -14,8 +14,8 @@ def preprocessing(filename,interactions,interactions3, interactions4,obs,count_a
 		for line in infile:
 			s1=line.strip().split("\t")[0]
 			s2=line.strip().split("\t")[1]
-			cs1=line.strip().split("\t")[2]
-			cs2=line.strip().split("\t")[3]
+			#cs1=line.strip().split("\t")[2]
+			#cs2=line.strip().split("\t")[3]
 
 			obs.append([int(s1),int(s2)])
 			if not int(s1) in count_all:
