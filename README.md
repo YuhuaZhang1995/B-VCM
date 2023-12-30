@@ -15,4 +15,4 @@ The Project includes the code needed to reproduce results, which includes
 
 (4) The code to generate the comparison results with other methods (See details at [Other methods](https://github.com/YuhuaZhang1995/B-VCM/blob/main/Comparison%20In%20TalkLife/README.md))
 
-
+*Note all codes are implemented based on Python version 3.7.4, and R version 4.3.2*
