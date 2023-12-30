@@ -12,8 +12,7 @@ python B-VCM.py --input-file testdata.txt --K 2 --iter 10 --burn-in 5 --output-p
 
 - **Required parameter**
 
-`--input-file`: Input network data, with each line containing the node1, node2, block assignment of node1, and block assignment of node2
-, separated by tab. **_e.g. --input-file testdata.txt**
+`--input-file`: Input network data, with each line containing the node1, node2, block assignment of node1, and block assignment of node2, separated by tab. If the block assignments are unknown, can fill the values with any arbitrary values. **_e.g. --input-file testdata.txt**
 
 - **Optional parameter**
 
