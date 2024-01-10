@@ -1,6 +1,6 @@
 # Visualization of the results
 
-We show here the code to generate the main results in the paper, which includes: 
+R package *ggplot2* is required. We provide here the example code and data to generate values in tables and figures as shown in the paper, which includes: 
 
 **(1) Table 1 and Figure 2: the L2 norm of the block labels and the spaghetti plot**
 
